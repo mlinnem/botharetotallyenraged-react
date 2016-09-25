@@ -1,0 +1,13 @@
+{
+  "name": "botharetotallyenraged",
+  "version": "1.0.0",
+  "description": "Both Are Totally Enraged",
+  "author": "Micah Linnemeier <mwlinnem@gmail.com>",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.13.3"
+  }
+}
