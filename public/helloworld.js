@@ -1,65 +1,75 @@
 //var all_animal_names = ["Albatross", "Cat", "Dog", "Elephant", "Ferret", "Jaguar", "Llama", "Mastodon", "Orangutan", "Porcupine", "Tarantula", "Warthog", "Zebra"];
 
 var backend = {
-  animals: {},
+    animals: {},
 
-  outstandingBallots: {},
+    outstandingBallots: {},
 
-  getBallot : function() {
-    var animalA = this.getRandomAnimalName();
-    var animalB = this.getRandomAnimalName();
+    getBallot: function() {
+        var animalA = this.getRandomAnimalName();
+        var animalB = this.getRandomAnimalName();
 
-    var ballot =  {"animalA" : animalA,
-            "animalB" : animalB,
-            "token" : Math.random()};
-    this.outstandingBallots[ballot.token] = ballot;
+        var ballot = {
+            "animalA": animalA,
+            "animalB": animalB,
+            "token": Math.random()
+        };
+        this.outstandingBallots[ballot.token] = ballot;
 
-    return ballot;
-  },
+        return ballot;
+    },
 
-  submitBallot: function(token, animalVotedForName) {
-    //retrieve server-side ballot (or fail)
-    var ballot = this.outstandingBallots[token];
-    if (! ballot) {
-      console.log("Faulty ballot submitted: " + token);
-      return false;
-    }
+    getAnimals: function() {
+      return this.animals;
+    },
 
-    //retrieve animal voted for and not voted for
+    submitBallot: function(token, animalVotedForName) {
+        //retrieve server-side ballot (or fail)
+        var ballot = this.outstandingBallots[token];
+        if (!ballot) {
+            console.log("Faulty ballot submitted: " + token);
+            return false;
+        }
 
-    var animalVotedFor;
-    var animalNotVotedFor;
-    if (animalVotedForName == ballot.animalA) {
-      animalVotedFor = this.animals[ballot.animalA];
-      animalNotVotedFor = this.animals[ballot.animalB];
-    } else if (animalVotedForName = ballot.animalB){
-      animalVotedFor = this.animals[ballot.animalB];
-      animalNotVotedFor = this.animals[ballot.animalA];
-    } else {
-      console.log("Voted for animal that was not on ballot: " + animalVotedForName);
-      return false;
-    }
+        //retrieve animal voted for and not voted for
 
-    //increment wins and losses
-    animalVotedFor.wins = animalVotedFor.wins + 1;
-    this.animals[animalVotedFor.name] = animalVotedFor;
+        var animalVotedFor;
+        var animalNotVotedFor;
+        if (animalVotedForName == ballot.animalA) {
+            animalVotedFor = this.animals[ballot.animalA];
+            animalNotVotedFor = this.animals[ballot.animalB];
+        } else if (animalVotedForName = ballot.animalB) {
+            animalVotedFor = this.animals[ballot.animalB];
+            animalNotVotedFor = this.animals[ballot.animalA];
+        } else {
+            console.log("Voted for animal that was not on ballot: " + animalVotedForName);
+            return false;
+        }
 
-    animalNotVotedFor.losses = animalNotVotedFor.losses + 1;
-    this.animals[animalNotVotedFor.name] = animalNotVotedFor;
+        //increment wins and losses
+        animalVotedFor.wins = animalVotedFor.wins + 1;
+        this.animals[animalVotedFor.name] = animalVotedFor;
 
-    //remove ballot from outstanding ballots;
-    delete this.outstandingBallots[ballot];
-  },
+        animalNotVotedFor.losses = animalNotVotedFor.losses + 1;
+        this.animals[animalNotVotedFor.name] = animalNotVotedFor;
 
-  createAnimal: function(name) {
-    this.animals[name] = {"name": name, "wins" : 0, "losses" : 0};
-  },
+        //remove ballot from outstanding ballots;
+        delete this.outstandingBallots[ballot];
+    },
 
-  getRandomAnimalName: function() {
-    var animalNames = Object.keys(this.animals);
-    return animalNames[Math.floor(Math.random()*animalNames.length)];
+    createAnimal: function(name) {
+        this.animals[name] = {
+            "name": name,
+            "wins": 0,
+            "losses": 0
+        };
+    },
 
-  },
+    getRandomAnimalName: function() {
+        var animalNames = Object.keys(this.animals);
+        return animalNames[Math.floor(Math.random() * animalNames.length)];
+
+    },
 }
 
 backend.createAnimal("Albatross");
@@ -68,20 +78,20 @@ backend.createAnimal("Dog");
 backend.createAnimal("Elephant");
 
 class BallotPresenter extends React.Component {
-  constructor() {
-      super();
+    constructor() {
+        super();
 
-      var ballot = backend.getBallot();
-      this.state = ballot;
+        var ballot = backend.getBallot();
+        this.state = ballot;
 
-      this.handleVote = this.handleVote.bind(this);
-  }
+        this.handleVote = this.handleVote.bind(this);
+    }
     handleVote(animalVotedForName) {
-      backend.submitBallot(this.state.token, animalVotedForName)
-      var ballot = backend.getBallot();
-      var animalA = ballot.animalA;
-      var animalB = ballot.animalB;
-      this.setState(ballot);
+        backend.submitBallot(this.state.token, animalVotedForName)
+        var ballot = backend.getBallot();
+        var animalA = ballot.animalA;
+        var animalB = ballot.animalB;
+        this.setState(ballot);
     }
 
     render() {
@@ -91,13 +101,25 @@ class BallotPresenter extends React.Component {
             p >
 
             <
-            AnimalButton animal = {this.state.animalA} onClick={this.handleVote}/ >
+            AnimalButton animal = {
+                this.state.animalA
+            }
+            onClick = {
+                this.handleVote
+            }
+            / >
             vs. <
-            AnimalButton animal = {this.state.animalB} onClick={this.handleVote}/ >
-            </p>
+            AnimalButton animal = {
+                this.state.animalB
+            }
+            onClick = {
+                this.handleVote
+            }
+            / > < /
+            p >
         );
     }
-  };
+};
 
 class AnimalButton extends React.Component {
     constructor() {
@@ -122,10 +144,59 @@ class AnimalButton extends React.Component {
     }
 }
 
-ReactDOM.render( <
-        BallotPresenter animalA = "Komodo Dragon"
-        animalB = "Bear"
-        date = {
-            new Date()
+class AnimalList extends React.Component {
+        constructor() {
+            super();
         }
-        />, document.getElementById('example') );
+
+
+        render() {
+                var animals = this.props.animals;
+                var rows = [];
+                for (var animalName in animals) {
+                    var animal = animals[animalName];
+                    rows.push( < AnimalRow animal = {
+                            animal
+                        }
+                        / > );
+                    }
+
+                    return ( < ul > {
+                            rows
+                        } < /ul>);
+                        //var text = this.state.clicked ? "clicked" : "";
+                    }
+                }
+
+                class AnimalRow extends React.Component {
+                    constructor() {
+                        super();
+                    }
+
+
+                    render() {
+                        return ( < li > {
+                                this.props.animal.name
+                            }-- {
+                                this.props.animal.wins
+                            }
+                            wins, {
+                                this.props.animal.losses
+                            }
+                            losses < /li>
+                        );
+                    }
+                }
+
+                ReactDOM.render( <
+                        BallotPresenter animalA = "Komodo Dragon"
+                        animalB = "Bear"
+                        date = {
+                            new Date()
+                        }
+                        />, document.getElementById('ballot') );
+                        ReactDOM.render( <
+                            AnimalList animals = {
+                                backend.getAnimals()
+                            }
+                            />, document.getElementById('animalList'));
